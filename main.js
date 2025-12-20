@@ -3,7 +3,7 @@ import WebSocket from "ws";
 import express from "express";
 
 const STREAM_URL = "wss://stream.aisstream.io/v0/stream";
-const mmsi = "308015000";
+const mmsi = process.env.MMSI;
 const CMS_HOST_URL = process.env.CMS_HOST_URL;
 const CMS_EMAIL = process.env.CMS_EMAIL;
 const CMS_PASSWORD = process.env.CMS_PASSWORD;
@@ -110,6 +110,7 @@ const handleClose = (event) => {
   isSocketOpen = false;
   clearInactivityTimer();
   console.warn(`AIS stream websocket closed (code ${event.code}).`);
+  console.log(event.reason);
   scheduleReconnect();
 };
 
@@ -120,7 +121,7 @@ const handleError = (err) => {
 
 const handleMessage = async (event) => {
   try {
-    let aisMessage = JSON.parse(event.data.toString());
+    let aisMessage = JSON.parse(event.data);
     minutesWaited = 0;
     console.log("AIS Message");
     console.log(aisMessage);
