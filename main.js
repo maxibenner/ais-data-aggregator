@@ -24,6 +24,7 @@ let missingCmsHostWarned = false;
 let missingCmsCredsWarned = false;
 let cmsAuthToken = null;
 let pendingCmsLogin = null;
+let pingTimer = null;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -43,9 +44,9 @@ const startInactivityTimer = () => {
   }
 
   inactivityTimer = setInterval(() => {
-    minutesWaited += 5;
-    console.log(`${minutesWaited} minutes since last message...`);
-  }, 300_000);
+    minutesWaited += 60;
+    console.log(`${minutesWaited / 60} hours since last message...`);
+  }, 3600_000);
 };
 
 const clearInactivityTimer = () => {
@@ -103,14 +104,24 @@ const handleOpen = () => {
   isSocketOpen = true;
   minutesWaited = 0;
   reconnectAttempts = 0;
+
+  // keepalive ping (helps with NAT / LB idle timeouts)
+  pingTimer = setInterval(() => {
+    if (socket?.readyState === WebSocket.OPEN) socket.ping();
+  }, 25_000);
+
   sendSubscription();
 };
 
 const handleClose = (event) => {
   isSocketOpen = false;
   clearInactivityTimer();
+
+  if (pingTimer) clearInterval(pingTimer);
+  pingTimer = null;
+
   console.warn(`AIS stream websocket closed (code ${event.code}).`);
-  console.log(event.reason);
+  console.log(event);
   scheduleReconnect();
 };
 
