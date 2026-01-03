@@ -8,7 +8,7 @@ const CMS_HOST_URL = process.env.CMS_HOST_URL;
 const CMS_EMAIL = process.env.CMS_EMAIL;
 const CMS_PASSWORD = process.env.CMS_PASSWORD;
 const cmsCollectionUrl = CMS_HOST_URL
-  ? new URL("/api/collections/ais-logs", CMS_HOST_URL).toString()
+  ? new URL("/api/ais-logs", CMS_HOST_URL).toString()
   : null;
 const cmsLoginUrl = CMS_HOST_URL
   ? new URL("/api/users/login", CMS_HOST_URL).toString()
