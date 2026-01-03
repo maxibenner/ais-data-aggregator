@@ -312,7 +312,8 @@ const persistPositionReport = async (pr) => {
       },
       body: JSON.stringify({
         mmsi,
-        location: [pr.Latitude, pr.Longitude],
+        // Flip lat/lon because of ais-stream peculiarity
+        location: [pr.Longitude, pr.Latitude],
         sog: pr.Sog,
         navigationalStatus: pr.NavigationalStatus,
         rateOfTurn: pr.RateOfTurn,
